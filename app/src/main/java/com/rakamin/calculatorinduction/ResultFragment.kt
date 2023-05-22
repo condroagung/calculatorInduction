@@ -6,15 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.text.isDigitsOnly
 import com.rakamin.calculatorinduction.databinding.FragmentResultBinding
 
 class ResultFragment : Fragment() {
 
     lateinit var binding : FragmentResultBinding
-    var result = ""
-    var listAll = mutableListOf<String>()
+    private var result = ""
+    private var listAll = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,54 +53,99 @@ class ResultFragment : Fragment() {
     }
 
     fun calculate(){
-        val results = separateString(this.result)
-        println(results)
-        var listNum = mutableListOf<Double>()
-        var listOperator = mutableListOf<Char>()
-        results.forEach{
-            if (it.toString().isDigitsOnly()){
-                listNum.add(it.toString().toDouble())
-            }
-            else{
-                listOperator.add(it as Char)
-            }
-        }
-        val resultCalculate = calculateValue(listNum,listOperator)
+//        val results = separateString(this.result)
+//        println(results)
+//        var listNum = mutableListOf<Double>()
+//        var listOperator = mutableListOf<Char>()
+//        results.forEach{
+//            if (it.toString().isDigitsOnly()){
+//                listNum.add(it.toString().toDouble())
+//            }
+//            else{
+//                listOperator.add(it as Char)
+//            }
+//        }
+        val resultCalculate = calculateNow()
         println(resultCalculate)
         binding.textResult.text = resultCalculate.toString()
         }
 
-    private fun calculateValue(numbers: List<Double>, operators: List<Char>): Double? {
-        if (numbers.size != operators.size + 1) {
-            // Invalid input: Number of numbers and operators mismatch
-            return null
-        }
+    private fun calculateNow(): Double {
+        val tokens = separateString(this.result)
 
-        var result = numbers[0]
+        val operandStack = mutableListOf<Double>()
+        val operatorStack = mutableListOf<Char>()
 
-        for (i in 1 until numbers.size) {
-            val operator = operators[i - 1]
-            val number = numbers[i]
+        val precedence = mapOf('+' to 1, '-' to 1, '*' to 2, '/' to 2)
 
-            when (operator) {
-                '+' -> result += number
-                '-' -> result -= number
-                '*' -> result *= number
-                '/' -> {
-                    if (number != 0.0) {
-                        result /= number
-                    } else {
-                        return null
-                    }
+        for (token in tokens) {
+            if (token in listOf('+', '-', '*', '/')) {
+
+                while (operatorStack.isNotEmpty() && precedence[operatorStack.last()]!! >= precedence[token]!!) {
+                    val op = operatorStack.removeAt(operatorStack.lastIndex)
+                    val right = operandStack.removeAt(operandStack.lastIndex)
+                    val left = operandStack.removeAt(operandStack.lastIndex)
+                    operandStack.add(performOperation(left, right, op))
                 }
-                else -> {
-                    return null
-                }
+
+                operatorStack.add(token as Char)
+            } else { // Operand (number)
+                val operand = token.toString().toDouble()
+                operandStack.add(operand)
             }
         }
 
-        return result
+        while (operatorStack.isNotEmpty()) {
+            val op = operatorStack.removeAt(operatorStack.lastIndex)
+            val right = operandStack.removeAt(operandStack.lastIndex)
+            val left = operandStack.removeAt(operandStack.lastIndex)
+            operandStack.add(performOperation(left, right, op))
+        }
+
+        return operandStack.first()
     }
+
+    private fun performOperation(left: Double, right: Double, operator: Char): Double {
+        return when (operator) {
+            '+' -> left + right
+            '-' -> left - right
+            '*' -> left * right
+            '/' -> left / right
+            else -> throw IllegalArgumentException("Unknown operator: $operator")
+        }
+    }
+
+//    private fun calculateValue(numbers: List<Double>, operators: List<Char>): Double? {
+//        if (numbers.size != operators.size + 1) {
+//            // Invalid input: Number of numbers and operators mismatch
+//            return null
+//        }
+//
+//        var result = numbers[0]
+//
+//        for (i in 1 until numbers.size) {
+//            val operator = operators[i - 1]
+//            val number = numbers[i]
+//
+//            when (operator) {
+//                '+' -> result += number
+//                '-' -> result -= number
+//                '*' -> result *= number
+//                '/' -> {
+//                    if (number != 0.0) {
+//                        result /= number
+//                    } else {
+//                        return null
+//                    }
+//                }
+//                else -> {
+//                    return null
+//                }
+//            }
+//        }
+//
+//        return result
+//    }
 
     private fun separateString(input: String): List<Any> {
         val resultList = mutableListOf<Any>()
