@@ -5,11 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.text.isDigitsOnly
-import com.rakamin.calculatorinduction.databinding.FragmentCalculateBinding
+import com.rakamin.calculatorinduction.databinding.FragmentScienceCalculateBinding
 
-class CalculateFragment : Fragment() {
-    lateinit var binding : FragmentCalculateBinding
+class ScienceCalculateFragment : Fragment() {
+    lateinit var binding : FragmentScienceCalculateBinding
     private lateinit var calculatorInterface: CalculatorInterface
     private var checkstate = ""
 
@@ -23,7 +22,7 @@ class CalculateFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentCalculateBinding.inflate(layoutInflater)
+        binding = FragmentScienceCalculateBinding.inflate(layoutInflater)
         return binding.root
     }
 
@@ -95,13 +94,14 @@ class CalculateFragment : Fragment() {
 
         binding.buttonSwitch.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, ScienceCalculateFragment())
+                .replace(R.id.fragmentContainer, CalculateFragment())
                 .commit()
         }
     }
 
     companion object {
+
         fun newInstance(param1: String, param2: String) =
-            CalculateFragment()
+            ScienceCalculateFragment()
     }
 }

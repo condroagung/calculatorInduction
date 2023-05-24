@@ -10,17 +10,15 @@
     <fragment
         android:id="@+id/fragmentResult"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_height="140dp"
         android:name="com.rakamin.calculatorinduction.ResultFragment"
         tools:layout="@layout/fragment_result"/>
 
-    <fragment
-        android:id="@+id/fragmentCalculate"
+    <LinearLayout
+        android:id="@+id/fragmentContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
         android:layout_weight="1"
-        android:name="com.rakamin.calculatorinduction.CalculateFragment"
-        tools:layout="@layout/fragment_calculate"/>
+        android:orientation="vertical" />
 
 </LinearLayout>
